@@ -1,0 +1,6 @@
+{
+  "name": "Belajar Trading dan Backtesting Simulator",
+  "description": "Platform edukasi trading interaktif dari nol dengan simulator backtesting grafik historis real-time, manajemen Stop Loss (SL) / Take Profit (TP), dan Mentor AI bimbingan cerdas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
