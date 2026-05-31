@@ -297,3 +297,300 @@ Jangan mempertaruhkan lebih dari **1% - 2%** dari total saldo akun Anda dalam sa
     ]
   }
 ];
+
+export const educationalModulesEN: Module[] = [
+  {
+    id: "m1",
+    title: "Guided Trading Foundations",
+    icon: "TrendingUp",
+    description: "The primary foundation of understanding financial markets, trading assets, pips, lots, leverage, and candlestick anatomy.",
+    lessons: [
+      {
+        id: "l1_1",
+        title: "Trading Universe & Instruments",
+        description: "What constitutes financial trading and what exactly is exchanged in these global markets?",
+        content: `### Mentorship Intro: What is Trading?
+
+Trading at its core is simply the **act of buying and selling financial assets** (such as Forex, Gold, Crypto, or Stocks) to pocket a profit from price fluctuation differentials.
+
+Unlike traditional long-term investing where assets are held for years, active traders aim to leverage price changes over days, hours, or even minutes.
+
+#### Highly Populated Asset Classes:
+1. **Forex (Foreign Exchange):** Currencies traded globally in pairs (e.g., EUR/USD, GBP/USD). It boasts ultra-high liquidity (exceeding $6 Trillion daily volume!).
+2. **Commodities (Gold / XAUUSD):** Frequently recognized as a *safe-haven* shelter during geopolitical or macroeconomic stress.
+3. **Crypto (Bitcoin / BTCUSD):** Digital assets in dynamic decentralized networks. Celebrated for extreme volatility with spectacular high-growth capabilities.
+
+#### Vital Core Terminologies:
+* **Bid & Ask:** *Bid* represents the best available market buy price, whereas *Ask* constitutes the best available sell price. The distance between them is the **Spread** (the broker's structural operational fee).
+* **Leverage (Financial Leverage):** Broker-issued virtual buffers letting you negotiate contract sizes vastly larger than your capital base. A **1:100** leverage ratio facilitates controlling $10,000 using merely $100.
+* **Lots & Margins:** Volume measures. 1 Standard Lot in Forex signifies 100,000 units of base currency. In Gold, it represents 100 troy ounces.`,
+        quiz: [
+          {
+            id: "q1_1_1",
+            question: "Which definition below best describes 'Spread' in active trading?",
+            options: [
+              "The distance between Open and Close candlestick values",
+              "The spread/differential between the best Bid price and Ask price",
+              "Minimum required account reload volume",
+              "Special liquidation commissions levied on losses"
+            ],
+            correctOptionIndex: 1,
+            explanation: "Spread is defined as the structural pricing difference between the prevailing Bid (buy offer) and Ask (sell offer) rates of the market."
+          },
+          {
+            id: "q1_1_2",
+            question: "When selecting a 1:100 leverage ratio, what influence does it exert on a trader's margin?",
+            options: [
+              "Limits your systemic risk to exactly 1%",
+              "Empowers you to command trading power up to 100 times your collateral",
+              "Grants 100% successful win rate on your initial trades",
+              "Vastly accelerates standard indicator accuracies"
+            ],
+            correctOptionIndex: 1,
+            explanation: "Leverage functions as a financial multiplier, enabling traders to control positions valued at 100x their deposited collateral margin."
+          }
+        ]
+      },
+      {
+        id: "l1_2",
+        title: "Candlestick Anatomy",
+        description: "Decrypting the visual language of the markets through classic Japanese candle structures.",
+        content: `### Reading visual Candlesticks
+
+Introduced in the 18th century by Japanese rice merchants, candlesticks are visual battle representations tracing struggle indicators between **Buyers (Bulls)** and **Sellers (Bears)**.
+
+Each candle contains 4 central metrics:
+1. **O (Open):** Period introductory pricing.
+2. **H (High):** Reached peak price point.
+3. **L (Low):** Reached floor price point.
+4. **C (Close):** Period final ending rate.
+
+#### Visual Formats:
+* **Bullish Candle (Green):** Assets ended **above** open rate (\`Close > Open\`). Sellers were overpowered by bulls.
+* **Bearish Candle (Red):** Assets settled **below** opening rate (\`Close < Open\`). Bears dominated market direction.
+
+#### Major Components:
+* **Body:** The thick rectangular sector mapping the path from Open to Close. More extensive bodies reveal elevated buying/selling momentum.
+* **Wicking Shadows:** Delicate vertical pins above and below the body. These present price **Rejections**.
+  * Extending upper wicks reflect prompt seller responses pushing prices down from highs.
+  * Deep lower shadows indicate persistent buyer actions recovering prices from low points.`,
+        quiz: [
+          {
+            id: "q1_2_1",
+            question: "What does an incredibly long lower shadow (wick) indicate on a bullish candle near support?",
+            options: [
+              "An absolute confirmation of a crash",
+              "Substantial buying rejection after sellers attempted to drop rates",
+              "Dramatically falling market volume metrics",
+              "Complete seller dominance throughout the period"
+            ],
+            correctOptionIndex: 1,
+            explanation: "An extended lower shadow displays that although sellers drove prices down, bulls vigorously bought the dip, raising rates before close."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "m2",
+    title: "Market Trends & Structure",
+    icon: "Compass",
+    description: "Learn to trace general market trends and identify high-probability trading boundaries.",
+    lessons: [
+      {
+        id: "l2_1",
+        title: "Spotting Market Trends",
+        description: "Improve trade performance by aligning your orders with major market currents.",
+        content: `### Recognizing general Market Trends
+
+'The Trend is Your Friend.' Counter-trend trading without proper structure is highly risky. Market trends generally occupy 1 of 3 phases:
+
+1. **Uptrend (Bull Market):**
+   Characteristics include sequential high peaks (**Higher Highs - HH**) and high valley floors (**Higher Lows - HL**). Focus intensely on **BUY** opportunities.
+   
+2. **Downtrend (Bear Market):**
+   Characterized by declining peaks (**Lower Highs - LH**) and declining floors (**Lower Lows - LL**). Focus intensely on **SELL** opportunities.
+   
+3. **Sideways / Range Limit:**
+   Consolidated horizontal bounce bounds where prices oscillate within clear support and resistance coordinates.
+
+> **Mentor Advice:** Always step back and view higher timeframes (such as 4H or 1D) to escape short-term noise channels before mapping entries.`,
+        quiz: [
+          {
+            id: "q2_1_1",
+            question: "What is the structural signature of a healthy Uptrend?",
+            options: [
+              "A series of Lower Lows (LL) followed by Lower Highs",
+              "A structural sequence of Higher Highs (HH) and Higher Lows (HL)",
+              "Strictly consecutive green candles with zero shadows",
+              "Prolonged horizontal price stabilization"
+            ],
+            correctOptionIndex: 1,
+            explanation: "Uptrends are defined by consecutive Higher High peaks and Higher Low valley formations, indicating continuous buying demand."
+          }
+        ]
+      },
+      {
+        id: "l2_2",
+        title: "Support & Resistance (S&R)",
+        description: "Mapping the horizontal psychological floors and ceilings of global assets.",
+        content: `### Understanding Support & Resistance
+
+Support and Resistance are horizontal boundaries where price rates tend to stall or bounce back.
+
+#### 1. Support (The Floor)
+Key structural horizontal level below current prices where intense buying demand stops prices from falling further.
+
+#### 2. Resistance (The Ceiling)
+Key structural horizontal level above current prices where strong selling supply is expected to turn prices downward.
+
+#### Core Principle: Role Reversals
+* **SBR (Support Become Resistance):** When support gets broken downwards, it frequently matures into an active resistance ceiling upon future tests.
+* **RBS (Resistance Become Support):** When resistance gets broken upwards, it frequently converts into a strong support floor on future corrective pullbacks.`,
+        quiz: [
+          {
+            id: "q2_2_1",
+            question: "What commonly occurs when a strong historic Resistance level is decisively broken upward?",
+            options: [
+              "It ceases to exist or serve any technical function",
+              "It is highly likely to function as a new Support floor during subsequent retracements",
+              "Prices are guaranteed to crash instantaneously",
+              "Asset operations are halted on global boards"
+            ],
+            correctOptionIndex: 1,
+            explanation: "Per the RBS (Resistance Become Support) guideline, broken resistance ceilings frequently offer reliable support floors when tested again from above."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "m3",
+    title: "Indicators & Candlestick Patterns",
+    icon: "BarChart2",
+    description: "Empower your chart reads using core Moving Averages, RSI oscillations, and high-probability patterns.",
+    lessons: [
+      {
+        id: "l3_1",
+        title: "Moving Averages (MA) & RSI",
+        description: "Examine mechanical trend-trackers and price boundary oscillators.",
+        content: `### Technical Analysis: Built-in Indicators
+
+Indicators process past price computations to highlight trends, momentums, or impending reversals.
+
+#### 1. Moving Averages (MA)
+Smooth price data to illuminate underlying directional trends.
+* **MA above price:** Represents dynamic resistance (Bearish indicator).
+* **MA below price:** Represents dynamic support (Bullish indicator).
+* **Crossovers:** A short-term MA crossing above a long-term MA triggers buying interest, widely termed as a *Golden Cross*.
+
+#### 2. Relative Strength Index (RSI)
+A momentum oscillator scaled between 0 and 100.
+* **Overbought (> 70):** Indicates markets may be overextended upwards due to aggressive buying, suggesting possible corrective pullbacks.
+* **Oversold (< 30):** Indicates rates are oversold due to heavy selling, presenting discounted value buy targets.`,
+        quiz: [
+          {
+            id: "q3_1_1",
+            question: "If the RSI indicator prints above 75, what technical signal does it convey?",
+            options: [
+              "The asset is exceptionally cheap and you should immediately BUY",
+              "The market is Overbought, signaling potential downside corrections",
+              "The currency exchange operations are closed",
+              "The bearish structural trend is picking up speed"
+            ],
+            correctOptionIndex: 1,
+            explanation: "An RSI over 70 highlights Overbought conditions, meaning the buying surge is overextended and could invite profit-taking pullbacks."
+          }
+        ]
+      },
+      {
+        id: "l3_2",
+        title: "Reversal Candle Formations",
+        description: "Harness structural high-impact confirmations near key zones.",
+        content: `### Powerful Candlestick Reversal Formations
+
+Before launching entries, wait for specific candle formations to confirm reversals at key S&R boundaries.
+
+1. **The Hammer / Pinbar:**
+   Features a tiny body at the top paired with an elongated lower shadow. Located at support, it confirms strong buying rejection of lower values.
+
+2. **Engulfing Patterns:**
+   * **Bullish Engulfing:** A large green body that completely eats/engulfs the previous red candle's body, showing a surge in buyers.
+   * **Bearish Engulfing:** A large red body that completely overwhelms the preceding green candle, signaling a shift in control to sellers.
+
+3. **Doji Star:**
+   Occurs when Open and Close prints are nearly identical, creating a cross. This signifies severe market indecision. A Doji forming at trend peaks often precedes reversals.`,
+        quiz: [
+          {
+            id: "q3_2_1",
+            question: "How is a valid 'Hammer' candlestick visually identified?",
+            options: [
+              "An extremely long body with absolutely no wicks",
+              "Two tiny identical horizontal bars side by side",
+              "A small body at the top with a lower shadow at least twice its body length",
+              "A perfect symmetrical cross with identical shadows"
+            ],
+            correctOptionIndex: 2,
+            explanation: "A valid Hammer candlestick features a tiny upper body and a long lower shadow that is at least twice the size of the body, indicating strong downside price rejection."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: "m4",
+    title: "Capital Risk Administration",
+    icon: "ShieldAlert",
+    description: "The absolute law of trading survival. Master this block to prevent capital depletion.",
+    lessons: [
+      {
+        id: "l4_1",
+        title: "SL, TP & Risk-to-Reward Ratios",
+        description: "Learn how to establish shields and profit targets systematically.",
+        content: `### Risk Management: The Trader's Ultimate Shield
+
+Many novice traders fail not because of inaccurate market analysis, but due to a **lack of systematic risk management**. Treat every trade assuming your thesis could be wrong.
+
+#### The Three Core Pillars of Position Management:
+1. **Stop Loss (SL) - The Safety Shield:**
+   An automated target price that cuts losing trades short, preserving your capital from severe market swings.
+2. **Take Profit (TP) - The Harvest Target:**
+   An automated target rate that locks in profits when your target price is reached, securing gains before market reversals.
+3. **Risk-to-Reward (R:R) Ratio:**
+   A metric comparing potential risk against potential reward.
+   * An R:R ratio of **1:2** means for every $10 risked (SL), you target a profit of $20 (TP).
+   * **The Math Advantage:** With a consistent 1:2 R:R ratio, you only need a **40% win rate** to remain consistently profitable over time.
+
+#### Standard Sizing Rule:
+Never risk more than **1% to 2%** of your total account balance on a single trade.`,
+        quiz: [
+          {
+            id: "q4_1_1",
+            question: "If a trader with a $10,000 balance strictly risks 1% per setup, what is the maximum dollar loss if the Stop Loss is hit?",
+            options: [
+              "$1,000",
+              "$500",
+              "$100",
+              "$10"
+            ],
+            correctOptionIndex: 2,
+            explanation: "1% of a $10,000 balance equals $100. Restricting risk to $100 per position protects traders from ruin during inevitable consecutive losses."
+          },
+          {
+            id: "q4_1_2",
+            question: "Why is implementing a minimum 1:2 Risk-to-Reward ratio highly advantageous?",
+            options: [
+              "It automates your trading cursor to hit targets",
+              "It guarantees unlimited profit gains with no capital restrictions",
+              "It keeps an account profitable even with a win rate below 50%",
+              "It eliminates broker commissions and dynamic rollover interest fees"
+            ],
+            correctOptionIndex: 2,
+            explanation: "With a 1:2 R:R ratio, winning trades yield twice as much as losing trades. Even with a 40% win rate, 4 wins ($80) minus 6 losses ($60) yields a net profit of $20."
+          }
+        ]
+      }
+    ]
+  }
+];
+

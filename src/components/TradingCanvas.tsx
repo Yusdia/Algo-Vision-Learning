@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Candlestick, Position, TradeLog } from "../types";
+import { Language } from "../translations";
 
 interface TradingCanvasProps {
   visibleCandles: Candlestick[];
@@ -12,6 +13,8 @@ interface TradingCanvasProps {
   showSr: boolean;                    // Enable intuitive S&R visual learning lanes
   pipDecimal: number;
   symbol: string;
+  timeframe: string;
+  language?: Language;
 }
 
 export const TradingCanvas: React.FC<TradingCanvasProps> = ({
@@ -24,7 +27,9 @@ export const TradingCanvas: React.FC<TradingCanvasProps> = ({
   showBb,
   showSr,
   pipDecimal,
-  symbol
+  symbol,
+  timeframe,
+  language = "ID"
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 600, height: 380 });
@@ -50,7 +55,7 @@ export const TradingCanvas: React.FC<TradingCanvasProps> = ({
   if (visibleCandles.length === 0) {
     return (
       <div className="flex items-center justify-center h-80 bg-slate-950 border border-slate-800 text-slate-500 rounded-xl">
-        Belum ada data grafik historis untuk ditampilkan.
+        {language === "EN" ? "No historical chart data to load yet." : "Belum ada data grafik historis untuk ditampilkan."}
       </div>
     );
   }
@@ -189,6 +194,7 @@ export const TradingCanvas: React.FC<TradingCanvasProps> = ({
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-1 bg-slate-950 rounded-lg text-[11px] font-mono border border-slate-800/80 mb-2">
         <div className="flex items-center gap-1.5 ">
           <span className="text-emerald-500 font-bold">{symbol}</span>
+          <span className="text-[10px] font-black text-rose-400 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded leading-none">{timeframe}</span>
           <span className="text-slate-400">Idx: {hoveredCandle.index}</span>
           <span className="bg-slate-800 px-1.5 py-0.5 rounded text-amber-300 font-semibold">{hoveredCandle.time}</span>
         </div>
@@ -366,7 +372,10 @@ export const TradingCanvas: React.FC<TradingCanvasProps> = ({
                 fontFamily="monospace"
                 fontWeight="bold"
               >
-                {sr.type === "S" ? "🔑 Support Floor" : "🧱 Resistance Ceiling"}
+                {sr.type === "S" 
+                  ? (language === "EN" ? "🔑 Support Floor" : "🔑 Lantai Support") 
+                  : (language === "EN" ? "🧱 Resistance Ceiling" : "🧱 Atap Resistance")
+                }
               </text>
             </g>
           );

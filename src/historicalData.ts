@@ -42,68 +42,87 @@ function createRandom(seed: number) {
   };
 }
 
-export function generateHistoricalCandles(instrumentId: string): Candlestick[] {
+export function generateHistoricalCandles(
+  instrumentId: string,
+  daysCount: number = 365,
+  timeframe: "1D" | "4H" | "1H" = "1D"
+): Candlestick[] {
   const candles: Candlestick[] = [];
   let basePrice = 2000;
-  let volatility = 0.02;
+  let rawVolatility = 0.02;
   let seed = 42;
 
   if (instrumentId === "gold") {
     basePrice = 2320.0;
-    volatility = 4.5; // average move in dollars
+    rawVolatility = 4.5; // average move in dollars
     seed = 101;
   } else if (instrumentId === "bitcoin") {
     basePrice = 61500.0;
-    volatility = 350.0;
+    rawVolatility = 350.0;
     seed = 202;
   } else if (instrumentId === "eurusd") {
     basePrice = 1.0845;
-    volatility = 0.0012;
+    rawVolatility = 0.0012;
     seed = 303;
   }
 
+  // Timeframe specific subdivisions
+  let stepsPerDay = 1;
+  let volatilityScale = 1.0;
+
+  if (timeframe === "4H") {
+    stepsPerDay = 6;
+    volatilityScale = 1.0 / Math.sqrt(6); // scale volatility proportionately to time square root
+  } else if (timeframe === "1H") {
+    stepsPerDay = 24;
+    volatilityScale = 1.0 / Math.sqrt(24);
+  }
+
+  const totalCandles = daysCount * stepsPerDay;
   const rand = createRandom(seed);
   let currentPrice = basePrice;
+  const volatility = rawVolatility * volatilityScale;
 
-  // Let's model a realistic scenario with 150 candlesticks:
-  // - First 40 bars: Sideways market forming strong Support and Resistance bounds
-  // - Next 30 bars: A powerful breakout and uptrend
-  // - Next 30 bars: Distribution and correction (retesting the breakout level)
-  // - Final 50 bars: Continuous bounce or trend continuation
+  // We model a realistic 1-year scenario (totalCandles bars):
+  // - First 25%: Sideways market forming strong Support & Resistance bounds
+  // - Next 25%: Powerful breakout rally and solid uptrend
+  // - Next 20%: Corrective drop / distribution retesting support levels
+  // - Final 30%: Dynamic trend continuation or recovery bounce
   
-  for (let i = 0; i < 150; i++) {
+  for (let i = 0; i < totalCandles; i++) {
     let trendMultiplier = 0;
+    const progress = i / totalCandles;
     
-    // Scenario mapping
+    // Scenario mapping scaled to the selected dataset length and timesteps
     if (instrumentId === "gold") {
       // Gold: Double Bottom -> Uptrend -> Retest support -> Bounce
-      if (i >= 0 && i < 30) {
+      if (progress < 0.20) {
         // Sideways / consolidation
-        trendMultiplier = Math.sin(i / 3) * 0.4;
-      } else if (i >= 30 && i < 65) {
+        trendMultiplier = Math.sin(i / (3.5 * stepsPerDay)) * 0.45;
+      } else if (progress >= 0.20 && progress < 0.45) {
         // Strong uptrend breakout
-        trendMultiplier = 1.3 - (i - 65) * 0.01;
-      } else if (i >= 65 && i < 95) {
-        // Corrective drop
-        trendMultiplier = -0.9;
+        trendMultiplier = 1.3 - (progress - 0.45) * 0.04;
+      } else if (progress >= 0.45 && progress < 0.68) {
+        // Corrective drop (retest)
+        trendMultiplier = -0.95;
       } else {
         // Dynamic bounce
-        trendMultiplier = 0.8 + Math.sin(i / 10) * 0.3;
+        trendMultiplier = 0.85 + Math.sin(i / (15 * stepsPerDay)) * 0.35;
       }
     } else if (instrumentId === "bitcoin") {
       // Bitcoin: Accumulation -> Huge Breakout -> Sharp crash -> Sideways
-      if (i >= 0 && i < 40) {
-        trendMultiplier = -0.1 + Math.sin(i / 5) * 0.3;
-      } else if (i >= 40 && i < 80) {
-        trendMultiplier = 2.2;
-      } else if (i >= 80 && i < 110) {
-        trendMultiplier = -1.8;
+      if (progress < 0.25) {
+        trendMultiplier = -0.1 + Math.sin(i / (6 * stepsPerDay)) * 0.35;
+      } else if (progress >= 0.25 && progress < 0.55) {
+        trendMultiplier = 2.1;
+      } else if (progress >= 0.55 && progress < 0.75) {
+        trendMultiplier = -1.9;
       } else {
-        trendMultiplier = 0.5;
+        trendMultiplier = 0.6;
       }
     } else {
-      // EURUSD: Pure range bounce between bounds, excellent for S/R practice
-      trendMultiplier = Math.sin(i / 8) * 0.9;
+      // EURUSD: Range bounce between bounds, exceptional for S&R practice
+      trendMultiplier = Math.sin(i / (12 * stepsPerDay)) * 0.95;
     }
 
     const open = currentPrice;
@@ -111,18 +130,40 @@ export function generateHistoricalCandles(instrumentId: string): Candlestick[] {
     const close = open + change;
     
     // Establish high and low with realistic tails
-    const upwardWick = rand() * volatility * 0.6;
-    const downwardWick = rand() * volatility * 0.6;
+    const upwardWick = rand() * volatility * 0.55;
+    const downwardWick = rand() * volatility * 0.55;
     const high = Math.max(open, close) + upwardWick;
     const low = Math.min(open, close) - downwardWick;
 
-    // Simulate time string (staggered days)
-    const date = new Date(2026, 0, 1);
-    date.setDate(date.getDate() + i);
-    const timeStr = date.toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "short"
-    });
+    // Simulate time string (starting Jan 1, 2025 up to Dec 31, 2025 for a 365-day year)
+    const date = new Date(2025, 0, 1);
+    if (timeframe === "4H") {
+      date.setHours(date.getHours() + i * 4);
+    } else if (timeframe === "1H") {
+      date.setHours(date.getHours() + i * 1);
+    } else {
+      date.setDate(date.getDate() + i);
+    }
+
+    let timeStr = "";
+    if (timeframe === "4H" || timeframe === "1H") {
+      const dayStr = date.toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short"
+      });
+      const hourStr = date.toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+      timeStr = `${dayStr}, ${hourStr}`;
+    } else {
+      timeStr = date.toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      });
+    }
 
     candles.push({
       index: i,

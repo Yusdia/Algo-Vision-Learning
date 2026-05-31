@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  <!-- Beranda Utama / Simulator Trading & Backtesting -->
+  <url>
+    <loc>https://belajar-trading-dan-backtesting-simulator-408424249805.asia-southeast1.run.app/</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.00</priority>
+  </url>
+
+  <!-- Halaman Akademi Trading / Kelas Interaktif -->
+  <url>
+    <loc>https://belajar-trading-dan-backtesting-simulator-408424249805.asia-southeast1.run.app/#academy</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Halaman AI Chart Analyzer / Analisa Pola Grafik -->
+  <url>
+    <loc>https://belajar-trading-dan-backtesting-simulator-408424249805.asia-southeast1.run.app/#analyzer</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Panduan Trading Pemula (Stop Loss, Take Profit, Manajemen Risiko) -->
+  <url>
+    <loc>https://belajar-trading-dan-backtesting-simulator-408424249805.asia-southeast1.run.app/#guide</loc>
+    <lastmod>2026-05-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.70</priority>
+  </url>
+</urlset>

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
-import { educationalModules } from "../lessonsData";
+import React, { useState, useEffect } from "react";
+import { educationalModules, educationalModulesEN } from "../lessonsData";
 import { Module, Lesson } from "../types";
-import { BookOpen, Trophy, Check, AlertCircle, Award, ArrowRight, ArrowLeft } from "lucide-react";
+import { BookOpen, Trophy, Check, AlertCircle, Award, ArrowRight } from "lucide-react";
+import { Language, translations } from "../translations";
 
 interface EducationalSectionProps {
   onSuggestTradeSetup: (setup: { symbol: string; type: "BUY" | "SELL"; sl: number; tp: number }) => void;
@@ -9,6 +10,7 @@ interface EducationalSectionProps {
   onCompleteLesson: (lessonId: string) => void;
   xpPoints: number;
   onAddXp: (pts: number) => void;
+  language: Language;
 }
 
 export const EducationalSection: React.FC<EducationalSectionProps> = ({
@@ -16,15 +18,37 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
   userProgress,
   onCompleteLesson,
   xpPoints,
-  onAddXp
+  onAddXp,
+  language
 }) => {
-  const [selectedModule, setSelectedModule] = useState<Module | null>(educationalModules[0]);
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(educationalModules[0].lessons[0]);
+  const t = translations[language];
+  const modulesSelection = language === "ID" ? educationalModules : educationalModulesEN;
+
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   
   // Quiz state
   const [currentQuizAns, setCurrentQuizAns] = useState<{ [qId: string]: number }>({});
   const [quizSubmitted, setQuizSubmitted] = useState<{ [qId: string]: boolean }>({});
   const [quizFeedbacks, setQuizFeedbacks] = useState<{ [qId: string]: string }>({});
+
+  // Sync with language changes
+  useEffect(() => {
+    // Find previously matched module index or default to index 0
+    const activeModIndex = selectedModule 
+      ? modulesSelection.findIndex(m => m.id === selectedModule.id)
+      : 0;
+
+    const matchedMod = modulesSelection[activeModIndex >= 0 ? activeModIndex : 0] || null;
+    setSelectedModule(matchedMod);
+
+    if (matchedMod) {
+      const activeLesIndex = selectedLesson
+        ? matchedMod.lessons.findIndex(l => l.id === selectedLesson.id)
+        : 0;
+      setSelectedLesson(matchedMod.lessons[activeLesIndex >= 0 ? activeLesIndex : 0] || null);
+    }
+  }, [language]);
 
   const handleSelectModule = (mod: Module) => {
     setSelectedModule(mod);
@@ -57,15 +81,23 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
     const isCorrect = userAns === correctIdx;
     
     if (isCorrect) {
+      const rightFeedback = language === "ID" 
+        ? `Benar! 🎉 +50 XP. ${explanation}`
+        : `Correct! 🎉 +50 XP. ${explanation}`;
+      
       setQuizFeedbacks((prev) => ({ 
         ...prev, 
-        [qId]: `Benar! 🎉 +50 XP. ${explanation}` 
+        [qId]: rightFeedback 
       }));
       onAddXp(50);
     } else {
+      const wrongFeedback = language === "ID"
+        ? `Kurang tepat. 💡 Pelajari lagi: ${explanation}`
+        : `Not quite right! 💡 Learn: ${explanation}`;
+
       setQuizFeedbacks((prev) => ({ 
         ...prev, 
-        [qId]: `Kurang tepat. 💡 Pelajari lagi: ${explanation}` 
+        [qId]: wrongFeedback 
       }));
       onAddXp(10); // small participation points
     }
@@ -81,7 +113,7 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
   };
 
   // Percent calculation
-  const totalLessonsCount = educationalModules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const totalLessonsCount = modulesSelection.reduce((acc, m) => acc + m.lessons.length, 0);
   const completedCount = Object.keys(userProgress).filter(k => userProgress[k]).length;
   const progressPercent = Math.round((completedCount / totalLessonsCount) * 100) || 0;
 
@@ -93,7 +125,7 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
         {/* Progress Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-slate-400">Kemajuan Studi</span>
+            <span className="text-sm font-semibold text-slate-400">{t.studyProgress}</span>
             <div className="flex items-center gap-1.5 text-xs text-amber-400 font-bold bg-amber-500/10 px-2 py-1 rounded-full">
               <Trophy className="w-3.5 h-3.5" />
               <span>{xpPoints} XP</span>
@@ -102,7 +134,7 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
           
           <div className="space-y-1.5">
             <div className="flex justify-between items-baseline text-xs text-slate-300">
-              <span>{completedCount} dari {totalLessonsCount} Materi Selesai</span>
+              <span>{completedCount} {language === "ID" ? "dari" : "of"} {totalLessonsCount} {t.studyFinishedUnits}</span>
               <span className="font-bold text-sm text-emerald-400">{progressPercent}%</span>
             </div>
             <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
@@ -116,15 +148,15 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
           {progressPercent === 100 && (
             <div className="mt-3 bg-indigo-500/10 border border-indigo-500/30 p-2.5 rounded-xl flex items-center gap-2 text-indigo-300 text-xs text-left">
               <Award className="w-5 h-5 flex-shrink-0 text-indigo-400" />
-              <span>Hebat! Anda memperoleh <strong>Sertifikat Virtual Kelulusan Dasar Trading</strong>! Anda sudah siap bertransaksi.</span>
+              <span dangerouslySetInnerHTML={{ __html: `<strong>${t.studyFinishedCertHeader}</strong> ` + t.studyFinishedCertText }} />
             </div>
           )}
         </div>
 
         {/* List Modules */}
         <div className="flex flex-col gap-2.5">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Kurikulum Level</span>
-          {educationalModules.map((mod, index) => {
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">{t.studyCurriculumHeader}</span>
+          {modulesSelection.map((mod, index) => {
             const isSelected = selectedModule?.id === mod.id;
             const completedInModule = mod.lessons.filter(l => userProgress[l.id]).length;
             const isAllCompleted = completedInModule === mod.lessons.length;
@@ -142,7 +174,7 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
                 <div className="flex items-center gap-2.5 justify-between w-full">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono font-bold text-slate-400 bg-slate-950 rounded px-1.5 py-0.5">
-                      MODUL 0{index + 1}
+                      {t.studyModuleLabel} 0{index + 1}
                     </span>
                     {isAllCompleted && <Check className="w-4 h-4 text-emerald-400" />}
                   </div>
@@ -163,7 +195,7 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
             
             {/* Lesson Sub-Navigation Tabs */}
             <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-800 pb-3 mb-4 overflow-x-auto">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-tight mr-2">Materi Modul:</span>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-tight mr-2">{t.studyLessonLabel}</span>
               {selectedModule.lessons.map((les) => {
                 const isLesSelected = selectedLesson?.id === les.id;
                 const isLesDone = userProgress[les.id];
@@ -229,7 +261,7 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
                 <div className="bg-slate-950/80 p-4 rounded-xl border border-slate-800/80 mt-5">
                   <div className="flex items-center gap-2 mb-3.5">
                     <Trophy className="w-5 h-5 text-amber-400" />
-                    <h5 className="text-sm font-bold text-slate-200">Kuis Pemahaman Materi (+50 XP)</h5>
+                    <h5 className="text-sm font-bold text-slate-200">{t.quizHeader}</h5>
                   </div>
 
                   <div className="space-y-6">
@@ -240,7 +272,9 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
 
                       return (
                         <div key={q.id} className="border-t border-slate-800/80 pt-4 first:border-0 first:pt-0">
-                          <p className="text-xs font-semibold text-slate-400 mb-1">PERTANYAAN 0{qIndex + 1}:</p>
+                          <p className="text-xs font-semibold text-slate-400 mb-1">
+                            {language === "ID" ? "PERTANYAAN" : "QUESTION"} 0{qIndex + 1}:
+                          </p>
                           <p className="text-sm text-slate-200 font-medium mb-3">{q.question}</p>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -288,16 +322,16 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
                                   : "bg-slate-800 text-slate-500 cursor-not-allowed"
                               }`}
                             >
-                              <span>Kirim Jawaban</span>
+                              <span>{t.quizSubmitBtn}</span>
                               <ArrowRight className="w-3.5 h-3.5" />
                             </button>
                           ) : (
                             <div className={`mt-3.5 p-3 rounded-lg flex gap-2 text-xs leading-relaxed ${
-                              feedback?.startsWith("Benar")
+                              feedback?.startsWith("Benar") || feedback?.startsWith("Correct")
                                 ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-300"
                                 : "bg-cyan-500/10 border border-cyan-500/20 text-cyan-200"
                             }`}>
-                              {feedback?.startsWith("Benar") ? (
+                              {feedback?.startsWith("Benar") || feedback?.startsWith("Correct") ? (
                                 <Check className="w-4 h-4 mt-0.5 flex-shrink-0 text-emerald-400" />
                               ) : (
                                 <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-cyan-400" />
@@ -313,16 +347,13 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
 
                 {/* Helpful Lesson Guide for Replaying & Charting */}
                 <div className="mt-4 bg-slate-950/40 px-4 py-3 rounded-xl border border-slate-800 text-xs text-left">
-                  <h6 className="font-semibold text-slate-300 mb-1">💡 Petunjuk Praktik Replay Simulator:</h6>
-                  <p className="text-slate-400 leading-relaxed">
-                    Setelah membaca rangkuman ini, silakan pindah ke tab **Replay Simulator** di layar atas.
-                    Gunakan kendali replay untuk memutarkan harga candlestick demi candlestick, cari penolakan candlestick (seperti **Hammer**), dan letakkan simulasi transaksi **BUY** atau **SELL** dengan disiplin Stop Loss (SL) yang tepat!
-                  </p>
+                  <h6 className="font-semibold text-slate-300 mb-1">{t.quizPracticeHintHeader}</h6>
+                  <p className="text-slate-400 leading-relaxed">{t.quizPracticeHintText}</p>
                 </div>
               </div>
             ) : (
               <div className="flex-grow flex items-center justify-center text-slate-400 italic">
-                Silakan pilih materi pelajaran di panel atas.
+                {t.quizEmptyState}
               </div>
             )}
           </div>

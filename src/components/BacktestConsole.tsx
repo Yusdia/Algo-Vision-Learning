@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Instrument, Position, TradeLog, AccountState } from "../types";
-import { Play, Pause, SkipForward, RotateCcw, TrendingUp, ShieldAlert, FileText, CheckCircle2, ChevronRight, Ban } from "lucide-react";
+import { Instrument, Position, TradeLog } from "../types";
+import { Play, Pause, SkipForward, RotateCcw, TrendingUp, ShieldAlert, FileText, Ban, Clock } from "lucide-react";
+import { Language, translations } from "../translations";
 
 interface BacktestConsoleProps {
   instruments: Instrument[];
@@ -21,6 +22,10 @@ interface BacktestConsoleProps {
   onClosePosition: (reason: "MANUAL_CLOSE") => void;
   currentClosePrice: number;
   pipDecimal: number;
+  // Duration Selectors
+  backtestDuration: number;
+  onChangeDuration: (duration: number) => void;
+  language: Language;
 }
 
 export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
@@ -39,8 +44,13 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
   onOpenPosition,
   onClosePosition,
   currentClosePrice,
-  pipDecimal
+  pipDecimal,
+  backtestDuration,
+  onChangeDuration,
+  language
 }) => {
+  const t = translations[language];
+
   // Trade setup variables
   const [lotSize, setLotSize] = useState<number>(0.1);
   const [leverage, setLeverage] = useState<number>(100);
@@ -112,7 +122,11 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
 
   const handleOpenLocalPosition = (type: "BUY" | "SELL") => {
     if (requiredMargin > balance) {
-      alert("⚠️ Jaminan Margin Tidak Cukup! Perkecil ukuran lot Anda atau naikkan leverage.");
+      if (language === "ID") {
+        alert("⚠️ Jaminan Margin Tidak Cukup! Perkecil ukuran lot Anda atau naikkan leverage.");
+      } else {
+        alert("⚠️ Insufficient Margin Collateral! Decrease lot size or increase selected leverage.");
+      }
       return;
     }
 
@@ -154,19 +168,23 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-5 text-slate-200">
       
-      {/* 1. SPEEDBAR & REPLAY DECKS (left col span 4) */}
+      {/* 1. SPEEDBAR & REPLAY DECKS (left col span 5) */}
       <div className="md:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col justify-between">
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2.5">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Kombinasi Replay</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+              {language === "ID" ? "Kombinasi Replay" : "Replay System"}
+            </span>
             <span className="text-xs font-mono text-emerald-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-850">
               Bar: {currentCandleIndex + 1}/{maxCandlesCount}
             </span>
           </div>
 
           {/* Asset instrument swapper */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] uppercase font-bold text-slate-400">Pilih Aset Perdagangan:</label>
+          <div className="space-y-1.5 text-left">
+            <label className="text-[10px] uppercase font-bold text-slate-400">
+              {language === "ID" ? "Pilih Aset Perdagangan:" : "Select Trading Instrument:"}
+            </label>
             <div className="grid grid-cols-3 gap-1.5">
               {instruments.map((ins) => {
                 const isActive = selectedInstrument.id === ins.id;
@@ -175,12 +193,12 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                     key={ins.id}
                     onClick={() => {
                       if (activePosition) {
-                        const leave = confirm("Mengubah aset akan menutup posisi aktif saat ini tanpa profit/loss. Lanjutkan?");
+                        const leave = confirm(t.confirmTimeframe);
                         if (!leave) return;
                       }
                       onChangeInstrument(ins);
                     }}
-                    className={`px-2 py-2 rounded-xl text-xs font-bold transition-all border ${
+                    className={`px-2 py-2 rounded-xl text-xs font-bold transition-all border text-center ${
                       isActive
                         ? "bg-slate-950 text-emerald-400 border-emerald-500/50 shadow-md"
                         : "bg-slate-950/40 text-slate-400 border-slate-850 hover:border-slate-800 hover:text-slate-200"
@@ -195,27 +213,65 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
             <p className="text-[10px] text-slate-400 leading-tight italic pl-1">{selectedInstrument.description}</p>
           </div>
 
+          {/* Dynamic Replay Duration Selection */}
+          <div className="space-y-1.5 pt-1 text-left">
+            <label className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+              <Clock className="w-3.5 h-3.5 text-emerald-400" />
+              <span>{t.durationLabel}</span>
+            </label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {[
+                { value: 365, label: language === "ID" ? "1 Tahun" : "1 Year", desc: language === "ID" ? "365 Hari - Tick" : "365 Days - Tick" },
+                { value: 180, label: language === "ID" ? "6 Bulan" : "6 Months", desc: language === "ID" ? "180 Hari" : "180 Days" },
+                { value: 90, label: language === "ID" ? "3 Bulan" : "3 Months", desc: language === "ID" ? "90 Hari" : "90 Days" },
+              ].map((opt) => {
+                const isSel = backtestDuration === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => {
+                      if (activePosition) {
+                        const leave = confirm(t.confirmTimeframe);
+                        if (!leave) return;
+                      }
+                      onChangeDuration(opt.value);
+                    }}
+                    className={`px-1.5 py-1.5 rounded-xl text-xs font-bold transition-all border text-center ${
+                      isSel
+                        ? "bg-slate-950 text-emerald-400 border-emerald-500/50 shadow-md"
+                        : "bg-slate-950/40 text-slate-400 border-slate-850 hover:border-slate-800 hover:text-slate-200"
+                    }`}
+                  >
+                    <div className="text-[11px] font-black">{opt.label}</div>
+                    <div className="text-[8px] font-normal opacity-75">{opt.desc}</div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Replay controller button pad */}
-          <div className="space-y-2 pt-1">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block pb-1">Kemudi Putar Sejarah:</span>
+          <div className="space-y-2 pt-1 text-left">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block pb-1">{t.controlsTitle}</span>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => onSetReplaying(!isReplaying)}
                 className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all outline-none ${
-                  isReplaying
-                    ? "bg-cyan-600 hover:bg-cyan-700 text-white animate-pulse"
-                    : "bg-emerald-500 hover:bg-emerald-600 text-slate-950"
-                }`}
+                    isReplaying
+                      ? "bg-cyan-600 hover:bg-cyan-700 text-white animate-pulse"
+                      : "bg-emerald-500 hover:bg-emerald-600 text-slate-950"
+                  }`}
               >
                 {isReplaying ? (
                   <>
                     <Pause className="w-4 h-4 fill-white text-white" />
-                    <span>Pause Replay</span>
+                    <span>{language === "ID" ? "Pause Replay" : "Pause Replay"}</span>
                   </>
                 ) : (
                   <>
                     <Play className="w-4 h-4 fill-slate-950 text-slate-950" />
-                    <span>Putar Replay</span>
+                    <span>{language === "ID" ? "Putar Replay" : "Play Replay"}</span>
                   </>
                 )}
               </button>
@@ -223,15 +279,20 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
               <button
                 onClick={onStepForward}
                 disabled={isReplaying || currentCandleIndex >= maxCandlesCount - 1}
-                title="Lompati 1 Candle"
+                title={language === "ID" ? "Lompati 1 Candle" : "Skip 1 Candle"}
                 className="bg-slate-950 border border-slate-800 p-2.5 rounded-xl hover:bg-slate-850 hover:border-slate-700 transition-all text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <SkipForward className="w-4 h-4" />
               </button>
 
               <button
-                onClick={onRestartReplay}
-                title="Ulangi dari Awal"
+                onClick={() => {
+                  const reset = confirm(t.confirmResetReplay);
+                  if (reset) {
+                    onRestartReplay();
+                  }
+                }}
+                title={language === "ID" ? "Ulangi dari Awal" : "Start Anew"}
                 className="bg-slate-950 border border-slate-800 p-2.5 rounded-xl hover:bg-slate-850 hover:border-slate-700 hover:text-rose-400 text-slate-300 transition-all"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -240,10 +301,10 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
           </div>
 
           {/* Play speed slider */}
-          <div className="space-y-1.5 pt-1">
+          <div className="space-y-1.5 pt-1 text-left">
             <div className="flex justify-between items-center text-[10px] uppercase font-bold text-slate-400">
-              <span>Kecepatan Auto-Play:</span>
-              <span className="font-mono text-emerald-400">{(1000 / replaySpeed).toFixed(1)} Bar/detik</span>
+              <span>{t.replaySpeedLabel}</span>
+              <span className="font-mono text-emerald-400">{(1000 / replaySpeed).toFixed(1)} Bar/{language === "ID" ? "detik" : "sec"}</span>
             </div>
             <input
               type="range"
@@ -259,8 +320,16 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
         </div>
 
         {/* Tip section */}
-        <div className="mt-4 bg-slate-950/80 p-2.5 rounded-xl border border-slate-850 text-[10px] leading-relaxed text-slate-400">
-          <span className="font-bold text-amber-500">PRO TIPS:</span> Tekan tombol **Putar Replay** untuk mensimulasikan pergerakan pasar secara otomatis. Tekan **Pause Replay** lalu tekan **Lompati 1 Candle** untuk menganalisis perkembangan posisi lilin demi lilin lebih teliti!
+        <div className="mt-4 bg-slate-950/80 p-2.5 rounded-xl border border-slate-850 text-[10px] leading-relaxed text-slate-400 text-left">
+          {language === "ID" ? (
+            <>
+              <span className="font-bold text-amber-500">PRO TIPS:</span> Tekan tombol **Putar Replay** untuk mensimulasikan pergerakan pasar secara otomatis. Tekan **Pause Replay** lalu tekan **Lompati 1 Candle** untuk menganalisis perkembangan posisi lilin demi lilin lebih teliti!
+            </>
+          ) : (
+            <>
+              <span className="font-bold text-amber-500">PRO TIPS:</span> Tap the **Play Replay** button to cycle historical charts autonomously. Pausing the system and stepping over candle-by-candle enables incredibly deep visual confirmations.
+            </>
+          )}
         </div>
       </div>
 
@@ -278,7 +347,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
             }`}
           >
             <TrendingUp className="w-3.5 h-3.5" />
-            <span>Simulasi Transaksi</span>
+            <span>{t.orderSetupTab}</span>
           </button>
           <button
             onClick={() => setActiveTab("history")}
@@ -289,7 +358,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
             }`}
           >
             <FileText className="w-3.5 h-3.5" />
-            <span>Jurnal Riwayat ({tradeHistory.length})</span>
+            <span>{t.tradeHistoryTab} ({tradeHistory.length})</span>
           </button>
         </div>
 
@@ -306,29 +375,29 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                       <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
                         activePosition.type === "BUY" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"
                       }`}>
-                        {activePosition.type} POSITION ACTIVE
+                        {activePosition.type} {language === "ID" ? "POSISI AKTIF" : "RUNNING POSITION"}
                       </span>
                       <span className="text-xs text-slate-300 font-bold">{selectedInstrument.symbol}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 font-mono">Lot size: {activePosition.lotSize}</span>
+                    <span className="text-[10px] text-slate-500 font-mono">Lot: {activePosition.lotSize}</span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 bg-slate-900 p-2.5 rounded-xl border border-slate-850/60 mt-2 text-xs">
+                  <div className="grid grid-cols-2 gap-3 bg-slate-900 p-2.5 rounded-xl border border-slate-850/60 mt-2 text-xs text-left">
                     <div>
-                      <span className="text-[10px] text-slate-400 block">Harga Masuk:</span>
+                      <span className="text-[10px] text-slate-400 block">{language === "ID" ? "Harga Masuk:" : "Entry Price:"}</span>
                       <span className="font-mono font-bold text-slate-200">{activePosition.entryPrice.toFixed(pipDecimal)}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-slate-400 block">Harga Saat Ini:</span>
+                      <span className="text-[10px] text-slate-400 block">{language === "ID" ? "Harga Saat Ini:" : "Current Price:"}</span>
                       <span className="font-mono font-bold text-slate-200">{currentClosePrice.toFixed(pipDecimal)}</span>
                     </div>
                     <div className="col-span-2 border-t border-slate-800/80 pt-2 flex justify-between items-center">
-                      <span className="text-[10px] text-slate-400 font-semibold uppercase">Potensi Stop Loss (SL):</span>
-                      <span className="font-mono font-bold text-rose-400/90">{activePosition.slPrice ? activePosition.slPrice.toFixed(pipDecimal) : "Tanpa SL"}</span>
+                      <span className="text-[10px] text-slate-400 font-semibold uppercase">{language === "ID" ? "Pengaman Stop Loss (SL):" : "Stop Loss Guard (SL):"}</span>
+                      <span className="font-mono font-bold text-rose-450/90">{activePosition.slPrice ? activePosition.slPrice.toFixed(pipDecimal) : (language === "ID" ? "Tanpa SL" : "No SL Protected")}</span>
                     </div>
-                    <div className="col-span-2 border-t border-slate-805/80 pt-1 flex justify-between items-center font-mono">
-                      <span className="text-[10px] text-slate-400 font-semibold uppercase">Potensi Take Profit (TP):</span>
-                      <span className="font-mono font-bold text-emerald-450/90">{activePosition.tpPrice ? activePosition.tpPrice.toFixed(pipDecimal) : "Tanpa TP"}</span>
+                    <div className="col-span-2 border-t border-slate-800/80 pt-1 flex justify-between items-center font-mono">
+                      <span className="text-[10px] text-slate-400 font-semibold uppercase">{language === "ID" ? "Target Take Profit (TP):" : "Target Take Profit (TP):"}</span>
+                      <span className="font-mono font-bold text-emerald-450/90">{activePosition.tpPrice ? activePosition.tpPrice.toFixed(pipDecimal) : (language === "ID" ? "Tanpa TP" : "No TP Set")}</span>
                     </div>
                   </div>
                 </div>
@@ -346,7 +415,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
 
                     return (
                       <div className="space-y-1 text-center bg-slate-900 border border-slate-850 p-2.5 rounded-xl">
-                        <span className="text-[10px] text-slate-400 block uppercase font-bold">Laporan Profit / Loss Mengambang:</span>
+                        <span className="text-[10px] text-slate-400 block uppercase font-bold">{t.floatingPnl}:</span>
                         <div className={`text-xl font-mono font-black ${isProfit ? "text-emerald-400" : "text-rose-400"}`}>
                           {isProfit ? "+" : "-"}${Math.abs(floatPnL).toFixed(2)}
                         </div>
@@ -359,19 +428,19 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                     className="w-full bg-rose-500 hover:bg-rose-600 active:scale-95 text-slate-950 font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-all shadow-lg"
                   >
                     <Ban className="w-4 h-4 text-slate-950" />
-                    <span>Tutup Posisi Sekarang (Ambil Hasil)</span>
+                    <span>{t.closePositionBtn}</span>
                   </button>
                 </div>
               </div>
             ) : (
               // Setup Position desk
-              <div className="space-y-3.5">
+              <div className="space-y-3.5 text-left">
                 
                 {/* Lot & Leverage options */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold uppercase text-slate-400 flex justify-between">
-                      <span>Ukuran Transaksi (LOT):</span>
+                      <span>{t.lotSizeLabel}:</span>
                       <span className="text-emerald-400 font-mono font-bold">{(lotSize).toFixed(2)} Lot</span>
                     </label>
                     <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl overflow-hidden p-1">
@@ -401,16 +470,16 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase text-slate-400">Leverage (Daya Ungkit):</label>
+                    <label className="text-[10px] font-bold uppercase text-slate-400">{t.leverageLabel}:</label>
                     <select
                       value={leverage}
                       onChange={(e) => setLeverage(Number(e.target.value))}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 outline-none"
                     >
-                      <option value="10">1:10 (Konservatif)</option>
-                      <option value="50">1:50 (Sedang)</option>
-                      <option value="100">1:100 (Disarankan)</option>
-                      <option value="200">1:200 (Agresif)</option>
+                      <option value="10">1:10 ({language === "ID" ? "Konservatif" : "Conservative"})</option>
+                      <option value="50">1:50 ({language === "ID" ? "Sedang" : "Moderate"})</option>
+                      <option value="100">1:100 ({language === "ID" ? "Disarankan" : "Recommended"})</option>
+                      <option value="200">1:200 ({language === "ID" ? "Agresif" : "Aggressive"})</option>
                     </select>
                   </div>
                 </div>
@@ -420,22 +489,22 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="text-[10px] font-bold uppercase text-slate-350 flex items-center gap-1">
                       <ShieldAlert className="w-3.5 h-3.5 text-amber-500" />
-                      <span>Sistem Manajemen Pengaman (SL & TP)</span>
+                      <span>{language === "ID" ? "Sistem Perlindungan Modal (SL & TP)" : "Modal Protection System (SL & TP)"}</span>
                     </span>
 
                     {/* Pre-calculated R:R ratios helper */}
                     <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => setRecommendedRatio(2)}
-                        className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 transition-all"
+                        className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500 hover:text-slate-950 transition-all font-mono"
                       >
-                        Atur R:R 1:2
+                        R:R 1:2
                       </button>
                       <button
                         onClick={() => setRecommendedRatio(3)}
-                        className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500 hover:text-slate-950 transition-all"
+                        className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500 hover:text-slate-950 transition-all font-mono"
                       >
-                        Atur R:R 1:3
+                        R:R 1:3
                       </button>
                     </div>
                   </div>
@@ -444,7 +513,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="space-y-1 bg-slate-900/60 p-2 rounded-lg border border-slate-850">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-semibold text-slate-400">Stop Loss (SL):</label>
+                        <label className="text-[10px] font-semibold text-slate-400">{t.slLabel}:</label>
                         <input
                           type="checkbox"
                           checked={useSl}
@@ -456,7 +525,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                       {useSl && (
                         <div className="space-y-1 pt-1.5">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-[9px] text-slate-500">Jarak SL:</span>
+                            <span className="text-[9px] text-slate-500">{language === "ID" ? "Jarak SL:" : "SL Distance:"}</span>
                             <span className="text-[10px] font-bold font-mono text-slate-200">{slPips} pips</span>
                           </div>
                           <input
@@ -474,7 +543,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                     {/* TP adjustment row */}
                     <div className="space-y-1 bg-slate-900/60 p-2 rounded-lg border border-slate-850">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-semibold text-slate-400">Take Profit (TP):</label>
+                        <label className="text-[10px] font-semibold text-slate-400">{t.tpLabel}:</label>
                         <input
                           type="checkbox"
                           checked={useTp}
@@ -486,7 +555,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                       {useTp && (
                         <div className="space-y-1 pt-1.5">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-[9px] text-slate-500">Jarak TP:</span>
+                            <span className="text-[9px] text-slate-500">{language === "ID" ? "Jarak TP:" : "TP Distance:"}</span>
                             <span className="text-[10px] font-bold font-mono text-slate-200">{tpPips} pips</span>
                           </div>
                           <input
@@ -504,12 +573,12 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
 
                   {/* Estimation summary stats */}
                   <div className="border-t border-slate-850 pt-2 flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400 font-mono">
-                    <div>Margin dibutuhkan: <span className="text-amber-400 font-bold">${requiredMargin.toFixed(2)}</span></div>
+                    <div>{language === "ID" ? "Margin:" : "Margin:"} <span className="text-amber-400 font-bold">${requiredMargin.toFixed(2)}</span></div>
                     {useSl && expectedRiskDollars && (
-                      <div>Resiko Potensial: <span className="text-rose-400 font-bold">-${expectedRiskDollars.toFixed(1)}</span></div>
+                      <div>{t.estimatedRisk} <span className="text-rose-400 font-bold">-${expectedRiskDollars.toFixed(1)}</span></div>
                     )}
                     {useTp && expectedRewardDollars && (
-                      <div>Target Profit: <span className="text-emerald-400 font-bold">+${expectedRewardDollars.toFixed(1)}</span></div>
+                      <div>{t.estimatedReward} <span className="text-emerald-400 font-bold">+${expectedRewardDollars.toFixed(1)}</span></div>
                     )}
                     <div>R:R Ratio: <span className="text-cyan-400 font-bold font-semibold bg-cyan-950/40 px-1 py-0.2 rounded border border-cyan-500/10">{riskRewardRatio}</span></div>
                   </div>
@@ -519,18 +588,18 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                 <div className="grid grid-cols-2 gap-3.5 pt-1">
                   <button
                     onClick={() => handleOpenLocalPosition("BUY")}
-                    className="bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-slate-950 font-black py-3 rounded-xl flex flex-col items-center justify-center shadow-lg transition-all border-b-4 border-emerald-700"
+                    className="bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-slate-950 font-black py-3 rounded-xl flex flex-col items-center justify-center shadow-lg transition-all border-b-4 border-emerald-700"
                   >
-                    <span className="text-xs tracking-wider">Mulai BUY (Long)</span>
-                    <span className="text-[9px] font-normal opacity-85 mt-0.5">Ekspektasi Pasar Naik</span>
+                    <span className="text-xs tracking-wider">{language === "ID" ? "Mulai BUY (Long)" : "Open BUY (Long)"}</span>
+                    <span className="text-[9px] font-normal opacity-85 mt-0.5">{language === "ID" ? "Ekspektasi Pasar Naik" : "Expect Market Surge"}</span>
                   </button>
 
                   <button
                     onClick={() => handleOpenLocalPosition("SELL")}
-                    className="bg-rose-500 hover:bg-rose-600 active:scale-95 text-slate-950 font-black py-3 rounded-xl flex flex-col items-center justify-center shadow-lg transition-all border-b-4 border-rose-700"
+                    className="bg-rose-500 hover:bg-rose-600 active:scale-[0.98] text-slate-950 font-black py-3 rounded-xl flex flex-col items-center justify-center shadow-lg transition-all border-b-4 border-rose-700"
                   >
-                    <span className="text-xs tracking-wider">Mulai SELL (Short)</span>
-                    <span className="text-[9px] font-normal opacity-85 mt-0.5">Ekspektasi Pasar Jatuh</span>
+                    <span className="text-xs tracking-wider">{language === "ID" ? "Mulai SELL (Short)" : "Open SELL (Short)"}</span>
+                    <span className="text-[9px] font-normal opacity-85 mt-0.5">{language === "ID" ? "Ekspektasi Pasar Jatuh" : "Expect Market Fall"}</span>
                   </button>
                 </div>
 
@@ -541,15 +610,19 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
 
         {/* ================= TAB B: TRADE JOURNAL LOG DISPLAY ================= */}
         {activeTab === "history" && (
-          <div className="flex-grow flex flex-col h-full bg-slate-950/40 border border-slate-850 rounded-xl overflow-hidden p-1.5">
+          <div className="flex-grow flex flex-col h-full bg-slate-950/40 border border-slate-850 rounded-xl overflow-hidden p-1.5 text-left">
             {tradeHistory.length === 0 ? (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-6 text-slate-500">
+              <div className="flex-grow flex flex-col items-center justify-center text-center p-6 text-slate-500">
                 <FileText className="w-10 h-10 mb-2 stroke-1 text-slate-700" />
-                <p className="text-sm">Belum ada catatan transaksi selesai.</p>
-                <p className="text-xs mt-1 max-w-xs leading-normal">Buka tab **Simulasi Transaksi** untuk membeli/menjual aset, lalu tunggu hingga menyentuh Take Profit atau Stop Loss!</p>
+                <p className="text-sm font-bold">{language === "ID" ? "Belum ada catatan" : "No recordings yet"}</p>
+                <p className="text-xs mt-1 max-w-xs leading-normal">
+                  {language === "ID" 
+                    ? "Buka tab transaksi, belilah/jual aset, dan saksikan pertempuran di bagan grafik menyentuh SL atau TP!" 
+                    : "Configure trade sizes on the action desk, buy/sell and witness active items hit boundaries!"}
+                </p>
               </div>
             ) : (
-              <div className="flex-1 overflow-y-auto max-h-[290px] space-y-2 pr-1 select-text">
+              <div className="flex-1 overflow-y-auto max-h-[310px] space-y-2 pr-1 select-text">
                 {tradeHistory.slice().reverse().map((log) => {
                   const isProfit = log.pnl >= 0;
                   return (
@@ -591,7 +664,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                             ? "🟢 HIT TP" 
                             : log.exitReason === "SL_HIT"
                             ? "🛑 HIT SL" 
-                            : "Manual"
+                            : (language === "ID" ? "Manual" : "Manual Closed")
                           }
                         </span>
                       </div>

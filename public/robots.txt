@@ -1,0 +1,6 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap Location
+Sitemap: https://belajar-trading-dan-backtesting-simulator-408424249805.asia-southeast1.run.app/sitemap.xml
