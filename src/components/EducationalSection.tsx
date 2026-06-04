@@ -194,8 +194,8 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
           <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl flex flex-col h-full">
             
             {/* Lesson Sub-Navigation Tabs */}
-            <div className="flex flex-wrap items-center gap-1.5 border-b border-slate-800 pb-3 mb-4 overflow-x-auto">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-tight mr-2">{t.studyLessonLabel}</span>
+            <div className="flex flex-nowrap items-center gap-1.5 border-b border-slate-800 pb-3 mb-4 overflow-x-auto scrollbar-none w-full">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-tight mr-2 flex-shrink-0">{t.studyLessonLabel}</span>
               {selectedModule.lessons.map((les) => {
                 const isLesSelected = selectedLesson?.id === les.id;
                 const isLesDone = userProgress[les.id];
@@ -204,7 +204,7 @@ export const EducationalSection: React.FC<EducationalSectionProps> = ({
                   <button
                     key={les.id}
                     onClick={() => handleSelectLesson(les)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex-shrink-0 cursor-pointer ${
                       isLesSelected
                         ? "bg-slate-950 border border-slate-800 text-emerald-400 font-bold"
                         : "hover:bg-slate-800 text-slate-300"

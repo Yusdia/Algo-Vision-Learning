@@ -153,7 +153,7 @@ export const MentorAI: React.FC<MentorAIProps> = ({
   };
 
   return (
-    <div className="flex flex-col h-[520px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+    <div className="flex flex-col h-[440px] md:h-[520px] bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
       
       {/* Header Panel */}
       <div className="flex items-center justify-between px-4 py-3 bg-slate-950 border-b border-slate-800">

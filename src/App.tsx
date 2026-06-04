@@ -579,27 +579,53 @@ export default function App() {
     <div className="min-h-screen bg-slate-950 font-sans text-slate-100 flex flex-col justify-between">
       
       {/* 1. TOP NAVBAR HEADBOARD */}
-      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-4 py-3 shadow-md">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-800 px-3 py-2.5 md:px-4 md:py-3 shadow-md">
+        {/* Style block to hide scrollbars globally for a more cohesive UX */}
+        <style dangerouslySetInnerHTML={{__html: `
+          .scrollbar-none::-webkit-scrollbar { display: none !important; }
+          .scrollbar-none { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+        `}} />
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 lg:gap-4">
           
-          {/* Logo & title context */}
-          <div className="flex items-center gap-3">
-            <div className="bg-emerald-500 text-slate-950 p-2 rounded-xl font-bold flex items-center justify-center shadow-lg shadow-emerald-500/10">
-              <GraduationCap className="w-5.5 h-5.5" />
+          {/* Row 1: Brand & Balance Stats on Mobile, Brand Only on Desktop */}
+          <div className="flex items-center justify-between lg:justify-start gap-4 flex-wrap lg:flex-nowrap">
+            {/* Logo & title context */}
+            <div className="flex items-center gap-2 md:gap-3">
+              <div className="bg-slate-950 p-1.5 rounded-xl font-bold flex items-center justify-center shadow-lg border border-slate-800/80 hover:scale-105 transition-transform duration-250">
+                <img
+                  src="/favicon.svg"
+                  alt="App Logo"
+                  className="w-5.5 h-5.5 md:w-6.5 md:h-6.5 object-cover rounded-lg"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+              <div className="text-left">
+                <h1 className="text-xs sm:text-sm md:text-base font-extrabold text-slate-100 tracking-tight leading-tight flex items-center gap-1">
+                  <span>{t.headerTitle}</span>
+                </h1>
+                <p className="text-[9px] md:text-[10px] text-slate-400 font-medium leading-none mt-0.5">{t.headerSubtitle}</p>
+              </div>
             </div>
-            <div className="text-left">
-              <h1 className="text-sm md:text-base font-extrabold text-slate-100 tracking-tight">{t.headerTitle}</h1>
-              <p className="text-[10px] text-slate-400 font-medium">{t.headerSubtitle}</p>
+
+            {/* Quick Balance/XP info on very small screens inline */}
+            <div className="flex lg:hidden items-center gap-2">
+              {/* Balance Badge mobile discrete */}
+              <div className="flex items-center gap-1.5 bg-slate-950/80 border border-slate-850 px-2.5 py-1 rounded-xl">
+                <Coins className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-[11px] font-black font-mono text-slate-100">
+                  ${balance.toLocaleString(language === "ID" ? "id-ID" : "en-US", { maximumFractionDigits: 0 })}
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Tab Selection Row */}
-          <nav className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          {/* Row 2 / Centered: Tab Selection Row (Horizontal Scrollable on Mobile, Grid flex on desktop) */}
+          <nav className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs overflow-x-auto whitespace-nowrap scrollbar-none w-full lg:w-auto">
             <button
               onClick={() => setActiveMainTab("simulator")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg font-bold transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
                 activeMainTab === "simulator"
-                  ? "bg-slate-850 text-emerald-400"
+                  ? "bg-slate-850 text-emerald-400 shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
@@ -608,9 +634,9 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveMainTab("academy")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg font-bold transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
                 activeMainTab === "academy"
-                  ? "bg-slate-850 text-emerald-400"
+                  ? "bg-slate-850 text-emerald-400 shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
@@ -619,9 +645,9 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveMainTab("analyzer")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg font-bold transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
                 activeMainTab === "analyzer"
-                  ? "bg-slate-850 text-emerald-400"
+                  ? "bg-slate-850 text-emerald-400 shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
@@ -630,9 +656,9 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveMainTab("guide")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg font-bold transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
                 activeMainTab === "guide"
-                  ? "bg-slate-850 text-emerald-400"
+                  ? "bg-slate-850 text-emerald-400 shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
@@ -641,9 +667,9 @@ export default function App() {
             </button>
             <button
               onClick={() => setActiveMainTab("monetize")}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-2 rounded-lg font-bold transition-all flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
                 activeMainTab === "monetize"
-                  ? "bg-slate-850 text-emerald-400"
+                  ? "bg-slate-850 text-emerald-400 shadow-sm"
                   : "text-slate-400 hover:text-slate-200"
               }`}
             >
@@ -652,14 +678,14 @@ export default function App() {
             </button>
           </nav>
 
-          {/* Right Header Stats & Language Selector Deck */}
-          <div className="flex items-center gap-3">
+          {/* Row 3: Stats Deck & Language Selectors (hidden elements on extra small) */}
+          <div className="flex items-center gap-2 md:gap-3 justify-between lg:justify-end">
             {/* Language toggle flag */}
             <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-850 text-[10px]">
               <Globe className="w-3.5 h-3.5 text-slate-400 ml-1 mr-0.5" />
               <button
                 onClick={() => handleToggleLanguage("ID")}
-                className={`px-1.5 py-0.5 rounded font-black transition-all ${
+                className={`px-1.5 py-0.5 rounded font-black transition-all cursor-pointer ${
                   language === "ID" ? "bg-slate-800 text-emerald-400" : "text-slate-500 hover:text-slate-300"
                 }`}
               >
@@ -667,7 +693,7 @@ export default function App() {
               </button>
               <button
                 onClick={() => handleToggleLanguage("EN")}
-                className={`px-1.5 py-0.5 rounded font-black transition-all ${
+                className={`px-1.5 py-0.5 rounded font-black transition-all cursor-pointer ${
                   language === "EN" ? "bg-slate-800 text-emerald-400" : "text-slate-500 hover:text-slate-300"
                 }`}
               >
@@ -675,8 +701,8 @@ export default function App() {
               </button>
             </div>
 
-            {/* Balance Badge */}
-            <div className="flex items-center gap-2 bg-slate-950/80 border border-slate-850 px-3 py-1.5 rounded-xl">
+            {/* Desktop Balance Badge */}
+            <div className="hidden lg:flex items-center gap-2 bg-slate-950/80 border border-slate-850 px-3 py-1.5 rounded-xl">
               <Coins className="w-4 h-4 text-emerald-400" />
               <div className="text-left font-mono">
                 <span className="text-[8px] text-slate-400 block leading-none">{t.balanceLabel}</span>
@@ -684,8 +710,8 @@ export default function App() {
               </div>
             </div>
 
-            {/* XP Points Badge */}
-            <div className="hidden sm:flex items-center gap-2 bg-slate-950/80 border border-slate-850 px-3 py-1.5 rounded-xl">
+            {/* Always visible on md/lg, has XP badge */}
+            <div className="flex items-center gap-2 bg-slate-950/80 border border-slate-850 px-3 py-1.5 rounded-xl">
               <Award className="w-4 h-4 text-amber-500" />
               <div className="text-left">
                 <span className="text-[8px] text-slate-400 block leading-none">{t.xpLabel}</span>

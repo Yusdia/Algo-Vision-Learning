@@ -1,7 +1,6 @@
 import express from "express";
 import path from "path";
 import dotenv from "dotenv";
-import fs from "fs";
 import { GoogleGenAI } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 
@@ -39,49 +38,6 @@ if (apiKey) {
 // Define API routes
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", aiEnabled: !!ai });
-});
-
-// Dedicated routes for search engines and site verification
-app.get("/sitemap.xml", (req, res) => {
-  const possiblePaths = [
-    path.join(process.cwd(), "dist/sitemap.xml"),
-    path.join(process.cwd(), "public/sitemap.xml")
-  ];
-  for (const filePath of possiblePaths) {
-    if (fs.existsSync(filePath)) {
-      res.header("Content-Type", "application/xml");
-      return res.sendFile(filePath);
-    }
-  }
-  res.status(404).send("Sitemap not found");
-});
-
-app.get("/robots.txt", (req, res) => {
-  const possiblePaths = [
-    path.join(process.cwd(), "dist/robots.txt"),
-    path.join(process.cwd(), "public/robots.txt")
-  ];
-  for (const filePath of possiblePaths) {
-    if (fs.existsSync(filePath)) {
-      res.header("Content-Type", "text/plain");
-      return res.sendFile(filePath);
-    }
-  }
-  res.status(404).send("robots.txt not found");
-});
-
-app.get("/google11097922d253aa0e.html", (req, res) => {
-  const possiblePaths = [
-    path.join(process.cwd(), "dist/google11097922d253aa0e.html"),
-    path.join(process.cwd(), "public/google11097922d253aa0e.html")
-  ];
-  for (const filePath of possiblePaths) {
-    if (fs.existsSync(filePath)) {
-      res.header("Content-Type", "text/html");
-      return res.sendFile(filePath);
-    }
-  }
-  res.status(404).send("Verification file not found");
 });
 
 app.post("/api/mentor-chat", async (req, res) => {
