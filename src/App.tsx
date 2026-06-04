@@ -685,16 +685,18 @@ export default function App() {
               <Globe className="w-3.5 h-3.5 text-slate-400 ml-1 mr-0.5" />
               <button
                 onClick={() => handleToggleLanguage("ID")}
+                aria-label="Set language to Indonesian"
                 className={`px-1.5 py-0.5 rounded font-black transition-all cursor-pointer ${
-                  language === "ID" ? "bg-slate-800 text-emerald-400" : "text-slate-500 hover:text-slate-300"
+                  language === "ID" ? "bg-slate-800 text-emerald-400" : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 ID
               </button>
               <button
                 onClick={() => handleToggleLanguage("EN")}
+                aria-label="Set language to English"
                 className={`px-1.5 py-0.5 rounded font-black transition-all cursor-pointer ${
-                  language === "EN" ? "bg-slate-800 text-emerald-400" : "text-slate-500 hover:text-slate-300"
+                  language === "EN" ? "bg-slate-800 text-emerald-400" : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 EN
@@ -1164,9 +1166,11 @@ export default function App() {
                   </p>
                   
                   <textarea
+                    id="top-banner-textarea"
                     value={topBannerCode}
                     onChange={(e) => handleSaveTopBanner(e.target.value)}
                     placeholder="Contoh: <iframe src='https://...' width='728' height='90'></iframe>"
+                    aria-label={language === "ID" ? "Kode Banner Leaderboard" : "Leaderboard Banner Code"}
                     className="w-full h-40 bg-slate-950 border border-slate-805 rounded-xl p-3 font-mono text-[10px] text-emerald-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                   />
                 </div>
@@ -1201,9 +1205,11 @@ export default function App() {
                   </p>
                   
                   <textarea
+                    id="sidebar-banner-textarea"
                     value={sidebarBannerCode}
                     onChange={(e) => handleSaveSidebarBanner(e.target.value)}
                     placeholder="Contoh: <a href='https://...'><img src='https://...' /></a>"
+                    aria-label={language === "ID" ? "Kode Widget Ad Sidebar" : "Sidebar Ad Widget Code"}
                     className="w-full h-40 bg-slate-950 border border-slate-805 rounded-xl p-3 font-mono text-[10px] text-emerald-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                   />
                 </div>
@@ -1238,9 +1244,11 @@ export default function App() {
                   </p>
                   
                   <textarea
+                    id="popup-script-textarea"
                     value={popupScriptCode}
                     onChange={(e) => handleSavePopupScript(e.target.value)}
                     placeholder="Contoh: <script src='https://...' async></script>"
+                    aria-label={language === "ID" ? "Skrip Popup & Tracker" : "Popup Script & Tracker Code"}
                     className="w-full h-40 bg-slate-950 border border-slate-805 rounded-xl p-3 font-mono text-[10px] text-emerald-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                   />
                 </div>
@@ -1275,9 +1283,11 @@ export default function App() {
                   </p>
                   
                   <textarea
+                    id="popunder-script-textarea"
                     value={popunderScriptCode}
                     onChange={(e) => handleSavePopunderScript(e.target.value)}
                     placeholder="Contoh: <script src='https://...'></script>"
+                    aria-label={language === "ID" ? "Skrip Popunder otomatis" : "Popunder Script Code"}
                     className="w-full h-40 bg-slate-950 border border-slate-805 rounded-xl p-3 font-mono text-[10px] text-emerald-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
                   />
                 </div>
@@ -1429,7 +1439,7 @@ export default function App() {
       </main>
 
       {/* 4. FOOTER CREDITS */}
-      <footer className="bg-slate-900 border-t border-slate-800 p-4 text-center text-[11px] text-slate-500 space-y-2">
+      <footer className="bg-slate-900 border-t border-slate-800 p-4 text-center text-[11px] text-slate-400 space-y-2">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-2">
           <span>{language === "ID" ? "© 2026 Akademi Belajar Trading - Backtesting Simulator Tanpa Risiko" : "© 2026 Interactive Candlestick Academy - Risk-Free Replay Backtester"}</span>
           <div className="flex items-center gap-4">

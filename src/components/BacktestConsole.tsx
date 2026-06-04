@@ -280,7 +280,8 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                 onClick={onStepForward}
                 disabled={isReplaying || currentCandleIndex >= maxCandlesCount - 1}
                 title={language === "ID" ? "Lompati 1 Candle" : "Skip 1 Candle"}
-                className="bg-slate-950 border border-slate-800 p-2.5 rounded-xl hover:bg-slate-850 hover:border-slate-700 transition-all text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label={language === "ID" ? "Lompati 1 Candle" : "Skip 1 Candle"}
+                className="bg-slate-950 border border-slate-800 p-2.5 rounded-xl hover:bg-slate-850 hover:border-slate-700 transition-all text-slate-300 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
               >
                 <SkipForward className="w-4 h-4" />
               </button>
@@ -293,7 +294,8 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                   }
                 }}
                 title={language === "ID" ? "Ulangi dari Awal" : "Start Anew"}
-                className="bg-slate-950 border border-slate-800 p-2.5 rounded-xl hover:bg-slate-850 hover:border-slate-700 hover:text-rose-400 text-slate-300 transition-all"
+                aria-label={language === "ID" ? "Ulangi dari Awal" : "Start Anew"}
+                className="bg-slate-950 border border-slate-800 p-2.5 rounded-xl hover:bg-slate-850 hover:border-slate-700 hover:text-rose-400 text-slate-300 transition-all cursor-pointer"
               >
                 <RotateCcw className="w-4 h-4" />
               </button>
@@ -302,10 +304,10 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
 
           {/* Play speed slider */}
           <div className="space-y-1.5 pt-1 text-left">
-            <div className="flex justify-between items-center text-[10px] uppercase font-bold text-slate-400">
+            <label htmlFor="replay-speed-slider" className="flex justify-between items-center text-[10px] uppercase font-bold text-slate-400 cursor-pointer block w-full">
               <span>{t.replaySpeedLabel}</span>
               <span className="font-mono text-emerald-400">{(1000 / replaySpeed).toFixed(1)} Bar/{language === "ID" ? "detik" : "sec"}</span>
-            </div>
+            </label>
             <input
               type="range"
               min="200"
@@ -315,6 +317,7 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
               onChange={(e) => setReplaySpeed(2600 - Number(e.target.value))}
               id="replay-speed-slider"
               className="w-full h-1.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+              aria-label={t.replaySpeedLabel}
             />
           </div>
         </div>
@@ -439,14 +442,16 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                 {/* Lot & Leverage options */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase text-slate-400 flex justify-between">
+                    <label htmlFor="lot-size-input" className="text-[10px] font-bold uppercase text-slate-400 flex justify-between cursor-pointer">
                       <span>{t.lotSizeLabel}:</span>
                       <span className="text-emerald-400 font-mono font-bold">{(lotSize).toFixed(2)} Lot</span>
                     </label>
                     <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl overflow-hidden p-1">
                       <button
+                        type="button"
                         onClick={() => setLotSize((l) => Math.max(minLot, Number((l - lotStep).toFixed(2))))}
-                        className="px-2 py-1 text-slate-400 hover:bg-slate-900 hover:text-slate-100 rounded text-xs outline-none"
+                        aria-label={language === "ID" ? "Kurangi lot" : "Decrease lot size"}
+                        className="px-2 py-1 text-slate-450 hover:bg-slate-900 hover:text-slate-100 rounded text-xs outline-none"
                       >
                         -
                       </button>
@@ -459,10 +464,13 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                         onChange={(e) => setLotSize(Math.max(minLot, Math.min(maxLot, Number(Number(e.target.value).toFixed(2)) || minLot)))}
                         id="lot-size-input"
                         className="w-full bg-transparent text-center text-xs font-mono font-bold outline-none text-slate-100"
+                        aria-label={t.lotSizeLabel}
                       />
                       <button
+                        type="button"
                         onClick={() => setLotSize((l) => Math.min(maxLot, Number((l + lotStep).toFixed(2))))}
-                        className="px-2 py-1 text-slate-400 hover:bg-slate-900 hover:text-slate-100 rounded text-xs outline-none"
+                        aria-label={language === "ID" ? "Tambah lot" : "Increase lot size"}
+                        className="px-2 py-1 text-slate-450 hover:bg-slate-900 hover:text-slate-100 rounded text-xs outline-none"
                       >
                         +
                       </button>
@@ -470,11 +478,13 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase text-slate-400">{t.leverageLabel}:</label>
+                    <label htmlFor="leverage-select" className="text-[10px] font-bold uppercase text-slate-400 cursor-pointer">{t.leverageLabel}:</label>
                     <select
+                      id="leverage-select"
                       value={leverage}
                       onChange={(e) => setLeverage(Number(e.target.value))}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-100 outline-none"
+                      aria-label={t.leverageLabel}
                     >
                       <option value="10">1:10 ({language === "ID" ? "Konservatif" : "Conservative"})</option>
                       <option value="50">1:50 ({language === "ID" ? "Sedang" : "Moderate"})</option>
@@ -513,28 +523,32 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                   <div className="grid grid-cols-2 gap-3 text-xs">
                     <div className="space-y-1 bg-slate-900/60 p-2 rounded-lg border border-slate-850">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-semibold text-slate-400">{t.slLabel}:</label>
+                        <label htmlFor="use-sl-checkbox" className="text-[10px] font-semibold text-slate-300 cursor-pointer">{t.slLabel}:</label>
                         <input
                           type="checkbox"
+                          id="use-sl-checkbox"
                           checked={useSl}
                           onChange={(e) => setUseSl(e.target.checked)}
-                          className="rounded accent-emerald-500 bg-slate-950"
+                          className="rounded accent-emerald-500 bg-slate-950 cursor-pointer w-4 h-4"
+                          aria-label={t.slLabel}
                         />
                       </div>
                       
                       {useSl && (
-                        <div className="space-y-1 pt-1.5">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-[9px] text-slate-500">{language === "ID" ? "Jarak SL:" : "SL Distance:"}</span>
+                        <div className="space-y-1 pt-1.5 font-sans">
+                          <label htmlFor="sl-pips-slider" className="flex items-center justify-between gap-1 cursor-pointer block w-full">
+                            <span className="text-[9px] text-slate-405">{language === "ID" ? "Jarak SL:" : "SL Distance:"}</span>
                             <span className="text-[10px] font-bold font-mono text-slate-200">{slPips} pips</span>
-                          </div>
+                          </label>
                           <input
                             type="range"
+                            id="sl-pips-slider"
                             min="5"
                             max={selectedInstrument.id === "bitcoin" ? "2000" : selectedInstrument.id === "gold" ? "200" : "150"}
                             value={slPips}
                             onChange={(e) => setSlPips(Number(e.target.value))}
-                            className="w-full h-1 bg-slate-950 appearance-none cursor-ew-resize accent-rose-400"
+                            className="w-full h-1 bg-slate-950 appearance-none cursor-ew-resize accent-rose-450"
+                            aria-label={language === "ID" ? "Jarak SL" : "SL Distance"}
                           />
                         </div>
                       )}
@@ -543,28 +557,32 @@ export const BacktestConsole: React.FC<BacktestConsoleProps> = ({
                     {/* TP adjustment row */}
                     <div className="space-y-1 bg-slate-900/60 p-2 rounded-lg border border-slate-850">
                       <div className="flex items-center justify-between">
-                        <label className="text-[10px] font-semibold text-slate-400">{t.tpLabel}:</label>
+                        <label htmlFor="use-tp-checkbox" className="text-[10px] font-semibold text-slate-300 cursor-pointer">{t.tpLabel}:</label>
                         <input
                           type="checkbox"
+                          id="use-tp-checkbox"
                           checked={useTp}
                           onChange={(e) => setUseTp(e.target.checked)}
-                          className="rounded accent-emerald-500 bg-slate-950"
+                          className="rounded accent-emerald-500 bg-slate-950 cursor-pointer w-4 h-4"
+                          aria-label={t.tpLabel}
                         />
                       </div>
                       
                       {useTp && (
-                        <div className="space-y-1 pt-1.5">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-[9px] text-slate-500">{language === "ID" ? "Jarak TP:" : "TP Distance:"}</span>
+                        <div className="space-y-1 pt-1.5 font-sans">
+                          <label htmlFor="tp-pips-slider" className="flex items-center justify-between gap-1 cursor-pointer block w-full">
+                            <span className="text-[9px] text-slate-405">{language === "ID" ? "Jarak TP:" : "TP Distance:"}</span>
                             <span className="text-[10px] font-bold font-mono text-slate-200">{tpPips} pips</span>
-                          </div>
+                          </label>
                           <input
                             type="range"
+                            id="tp-pips-slider"
                             min="10"
                             max={selectedInstrument.id === "bitcoin" ? "5000" : selectedInstrument.id === "gold" ? "400" : "300"}
                             value={tpPips}
                             onChange={(e) => setTpPips(Number(e.target.value))}
                             className="w-full h-1 bg-slate-950 appearance-none cursor-ew-resize accent-emerald-400"
+                            aria-label={language === "ID" ? "Jarak TP" : "TP Distance"}
                           />
                         </div>
                       )}

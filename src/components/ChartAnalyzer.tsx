@@ -201,6 +201,7 @@ export const ChartAnalyzer: React.FC<ChartAnalyzerProps> = ({ language }) => {
                 onChange={handleFileChange} 
                 accept="image/*" 
                 className="hidden" 
+                aria-label="Upload chart image"
               />
               <div className="p-3.5 bg-slate-900 border border-slate-800/80 rounded-2xl mb-3 text-slate-400">
                 <Upload className="w-6 h-6 text-emerald-400 animate-pulse" />
@@ -236,7 +237,8 @@ export const ChartAnalyzer: React.FC<ChartAnalyzerProps> = ({ language }) => {
                 <button
                   type="button"
                   onClick={clearAll}
-                  className="absolute top-2.5 right-2.5 p-1 bg-slate-950/90 hover:bg-rose-950 text-slate-400 hover:text-rose-400 rounded-full border border-slate-800 shadow"
+                  aria-label={language === "ID" ? "Hapus gambar" : "Remove image"}
+                  className="absolute top-2.5 right-2.5 p-1 bg-slate-950/90 hover:bg-rose-950 text-slate-400 hover:text-rose-400 rounded-full border border-slate-800 shadow cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -244,7 +246,12 @@ export const ChartAnalyzer: React.FC<ChartAnalyzerProps> = ({ language }) => {
               
               <div className="flex justify-between items-center text-[10px] text-slate-400 pl-1 ">
                 <span>{t.statusLoaded}</span>
-                <button onClick={clearAll} className="text-rose-400 font-semibold hover:underline flex items-center gap-0.5">
+                <button 
+                  type="button"
+                  onClick={clearAll} 
+                  aria-label={t.changeImage}
+                  className="text-rose-400 font-semibold hover:underline flex items-center gap-0.5 cursor-pointer"
+                >
                   <RefreshCw className="w-3 h-3" /> {t.changeImage}
                 </button>
               </div>
@@ -285,16 +292,18 @@ export const ChartAnalyzer: React.FC<ChartAnalyzerProps> = ({ language }) => {
 
           {/* Custom user prompt / notes */}
           <div className="space-y-1.5 pt-1 border-t border-slate-800/60 text-left">
-            <label className="text-[10px] font-bold uppercase text-slate-415 flex items-center gap-1">
+            <label htmlFor="analyzer-notes-textarea" className="text-[10px] font-bold uppercase text-slate-350 flex items-center gap-1 cursor-pointer">
               <HelpCircle className="w-3.5 h-3.5 text-emerald-400" />
               <span>{t.analyzerNotesLabel}</span>
             </label>
             <textarea
+              id="analyzer-notes-textarea"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={t.analyzerNotesPlaceholder}
               rows={3}
               className="w-full bg-slate-950 border border-slate-850 rounded-xl p-2.5 text-xs text-slate-100 placeholder:text-slate-500 outline-none focus:border-emerald-500 transition-all resize-none"
+              aria-label={t.analyzerNotesLabel}
             />
           </div>
 

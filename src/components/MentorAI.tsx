@@ -173,7 +173,8 @@ export const MentorAI: React.FC<MentorAIProps> = ({
         <button
           onClick={handleResetChat}
           title={language === "ID" ? "Reset Percakapan" : "Reset Chat"}
-          className="text-slate-400 hover:text-slate-200 hover:bg-slate-800 p-1.5 rounded-lg transition-all"
+          aria-label={language === "ID" ? "Reset Percakapan" : "Reset Chat"}
+          className="text-slate-400 hover:text-slate-200 hover:bg-slate-800 p-1.5 rounded-lg transition-all cursor-pointer"
         >
           <RefreshCw className="w-3.5 h-3.5" />
         </button>
@@ -256,15 +257,17 @@ export const MentorAI: React.FC<MentorAIProps> = ({
           placeholder={t.mentorPromptPlaceholder}
           disabled={isLoading}
           id="mentor-chat-input"
+          aria-label={t.mentorPromptPlaceholder}
           className="flex-1 bg-slate-900 border border-slate-800 text-xs text-slate-100 rounded-xl px-3.5 py-2 placeholder:text-slate-500 outline-none focus:border-emerald-500 transition-all disabled:opacity-50"
         />
         <button
           type="submit"
           disabled={!inputValue.trim() || isLoading}
           id="mentor-chat-submit-btn"
+          aria-label={language === "ID" ? "Kirim pesan ke Mentor AI" : "Send message to Mentor AI"}
           className={`p-2 rounded-xl transition-all ${
             inputValue.trim() && !isLoading
-              ? "bg-emerald-500 text-slate-950 hover:scale-105 active:scale-95"
+              ? "bg-emerald-500 text-slate-950 hover:scale-105 active:scale-95 cursor-pointer"
               : "bg-slate-800 text-slate-500 cursor-not-allowed"
           }`}
         >
